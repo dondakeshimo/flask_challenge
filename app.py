@@ -43,7 +43,7 @@ class ChatBackend(object):
                                 "roomnum": roomnum,
                                 }
         for k,v in self.clients.items():
-            app.logger.info("key:", k, "\n", "values:", v)
+            app.logger.info("key:", k, "values:", v)
 
     def send(self, client, data):
         try:
