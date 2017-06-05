@@ -6,6 +6,7 @@ import gevent
 import json
 from flask import Flask, render_template, request
 from flask import redirect, url_for
+from flask import make_response
 from flask_sockets import Sockets
 
 # REDIS_URL = os.environ["REDIS_URL"]
@@ -71,9 +72,10 @@ roomnum = ""
 @app.route("/", methods=["GET"])
 def login():
     global handle, roomnum
-    handle  = request.args.get("name")
-    roomnum = str(request.args.get("roomnum"))
-    if (handle and roomnum):
+    if (request.args.get("name") and request.args.get("roomnum")):
+        handle  = request.args.get("name")
+        roomnum = str(request.args.get("roomnum"))
+        print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -81,6 +83,7 @@ def login():
 @app.route("/index")
 def index():
     global handle, roomnum
+    print("index:", handle, roomnum)
     return render_template("index.html", handle=handle, roomnum=roomnum)
 
 @sockets.route("/index/submit")
@@ -98,8 +101,9 @@ def inbox(ws):
 @sockets.route("/index/receive")
 def outbox(ws):
     global handle, roomnum
-    chats.register(ws, handle, roomnum)
-    app.logger.info(u"regist: {}".format(ws))
+    if (handle and roomnum and handle!=""):
+        chats.register(ws, handle, roomnum)
+        app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
         gevent.sleep(0.1)
