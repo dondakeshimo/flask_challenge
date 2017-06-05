@@ -69,9 +69,9 @@ chats.start()
 @app.route("/", methods=["GET"])
 def login():
     global handle, roomnum
-    handle  = request.args.get("name")
-    roomnum = str(request.args.get("roomnum"))
-    if (handle and roomnum and handle!=""):
+    if (request.args.get("name") and request.args.get("roomnum")):
+        handle  = request.args.get("name")
+        roomnum = str(request.args.get("roomnum"))
         print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
