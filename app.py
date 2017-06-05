@@ -30,7 +30,8 @@ class ChatBackend(object):
     def __iter_data(self):
         for message in self.pubsub.listen():
             data = message.get("data")
-            print("data from redis:", data, type(data))
+            app.logger.info("data from redis: {}".format(data))
+            app.logger.info("datatype of data: {}".format(type(data)))
             if message["type"] == "message":
                 data = unicode(data, "utf-8")
                 app.logger.info(u"Sending message: {}".format(data))
@@ -42,8 +43,7 @@ class ChatBackend(object):
                                 "roomnum": roomnum,
                                 }
         for k,v in self.clients.items():
-            print("key:", k)
-            print("values:" , v)
+            app.logger.info("key:", k, "\n", "values:", v)
 
     def send(self, client, data):
         try:
@@ -83,8 +83,6 @@ def login():
 def index():
     global handle, roomnum
     return render_template("index.html", handle=handle, roomnum=roomnum)
-    handle = ""
-    roomnum = ""
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -92,7 +90,7 @@ def inbox(ws):
         global chats
         gevent.sleep(0.1)
         message = ws.receive()
-        print("data from ws:", message, type(message))
+        app.logger.info("data from ws:", message, type(message))
 
         if message:
             app.logger.info(u"Inserting message: {}".format(message))
@@ -102,7 +100,7 @@ def inbox(ws):
 def outbox(ws):
     global handle, roomnum
     chats.register(ws, handle, roomnum)
-    print(ws)
+    app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
         gevent.sleep(0.1)
