@@ -55,17 +55,17 @@ chats = ChatBackend()
 chats.start()
 
 
-#@app.route("/", methods=["POST"])
-#def login():
-#    print(request.headers)
-#    print("body: {}".format(request.data))
-#    return render_template("login.html")
+@app.route("/", methods=["GET"])
+def login():
+    print(request.headers)
+    print("body: {}".format(request.data))
+    return render_template("login.html")
 
 
-@app.route("/")
-def hello():
-    name = "taku"
-    return render_template("index.html", handlename=name)
+#@app.route("/")
+#def hello():
+#    name = "taku"
+#    return render_template("index.html", handlename=name)
 
 @sockets.route("/submit")
 def inbox(ws):
