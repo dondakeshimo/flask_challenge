@@ -8,15 +8,15 @@ from flask import Flask, render_template, request
 from flask import redirect, url_for
 from flask_sockets import Sockets
 
-# REDIS_URL = os.environ["REDIS_URL"]
+REDIS_URL = os.environ["REDIS_URL"]
 REDIS_CHAN = "chat"
 
 app = Flask(__name__)
 app.debug = True
 
 sockets = Sockets(app)
-# redis = redis.from_url(REDIS_URL)
-redis = redis.Redis()
+redis = redis.from_url(REDIS_URL)
+# redis = redis.Redis()
 
 
 
