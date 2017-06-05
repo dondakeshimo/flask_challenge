@@ -4,7 +4,7 @@ import os
 import redis
 import gevent
 import json
-import datetime
+from datetime import datetime
 from flask import Flask, render_template, request
 from flask import redirect, url_for
 from flask import make_response
