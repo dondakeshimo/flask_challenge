@@ -5,7 +5,6 @@ if (window.location.protocol == "https:") {
   var ws_scheme = "ws://"
 };
 
-
 var inbox  = new ReconnectingWebSocket(ws_scheme + location.host + "/index/receive");
 var outbox = new ReconnectingWebSocket(ws_scheme + location.host + "/index/submit");
 
@@ -30,8 +29,7 @@ outbox.onclose = function(){
 
 $("#input-form").on("submit", function(event) {
   event.preventDefault();
-//  var handle = "taku";
-  var text   = $("#input-text")[0].value; 
-  outbox.send(JSON.stringify({ text: text }));
+  var text    = $("#input-text")[0].value;
+  outbox.send(JSON.stringify({ handle: handle, roomnum: roomnum, text: text }));
   $("#input-text")[0].value = "";
 });

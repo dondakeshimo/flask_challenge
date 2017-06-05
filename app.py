@@ -3,6 +3,7 @@
 import os
 import redis
 import gevent
+import json
 from flask import Flask, render_template, request
 from flask import redirect, url_for
 from flask_sockets import Sockets
@@ -40,10 +41,17 @@ class ChatBackend(object):
                                 "handle":  handle,
                                 "roomnum": roomnum,
                                 }
+        for k,v in self.clients.items():
+            print("key:", k)
+            print("values:" , v)
 
     def send(self, client, data):
         try:
-            client.send(data)
+            d_data = json.loads(data)
+            roomnum = d_data["roomnum"]
+            if self.clients[client]["roomnum"] == roomnum:
+                data = json.dumps(d_data)
+                client.send(data)
         except Exception:
             del self.clients[client]
 
@@ -57,8 +65,8 @@ class ChatBackend(object):
 
 chats = ChatBackend()
 chats.start()
-handle = "handle"
-roomnum = "roomnum"
+handle = ""
+roomnum = ""
 
 
 @app.route("/", methods=["GET"])
@@ -73,14 +81,16 @@ def login():
 
 @app.route("/index")
 def index():
-    return render_template("index.html", handlename=handle)
+    global handle, roomnum
+    return render_template("index.html", handle=handle, roomnum=roomnum)
 
 @sockets.route("/index/submit")
 def inbox(ws):
     while not ws.closed:
+        global chats
         gevent.sleep(0.1)
         message = ws.receive()
-        print(message)
+        print(message, type(message))
 
         if message:
             app.logger.info(u"Inserting message: {}".format(message))
@@ -90,6 +100,8 @@ def inbox(ws):
 def outbox(ws):
     global handle, roomnum
     chats.register(ws, handle, roomnum)
+    handle = ""
+    roomnum = ""
     print(ws)
 
     while not ws.closed:
