@@ -100,8 +100,6 @@ def inbox(ws):
 def outbox(ws):
     global handle, roomnum
     chats.register(ws, handle, roomnum)
-    handle = ""
-    roomnum = ""
     print(ws)
 
     while not ws.closed:
