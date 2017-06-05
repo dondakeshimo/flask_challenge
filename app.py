@@ -64,8 +64,6 @@ class ChatBackend(object):
 
 chats = ChatBackend()
 chats.start()
-handle = ""
-roomnum = ""
 
 
 @app.route("/", methods=["GET"])
