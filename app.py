@@ -30,7 +30,7 @@ class ChatBackend(object):
     def __iter_data(self):
         for message in self.pubsub.listen():
             data = message.get("data")
-            print(data, type(data))
+            print("data from redis:", data, type(data))
             if message["type"] == "message":
                 data = unicode(data, "utf-8")
                 app.logger.info(u"Sending message: {}".format(data))
@@ -83,6 +83,8 @@ def login():
 def index():
     global handle, roomnum
     return render_template("index.html", handle=handle, roomnum=roomnum)
+    handle = ""
+    roomnum = ""
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -90,7 +92,7 @@ def inbox(ws):
         global chats
         gevent.sleep(0.1)
         message = ws.receive()
-        print(message, type(message))
+        print("data from ws:", message, type(message))
 
         if message:
             app.logger.info(u"Inserting message: {}".format(message))
