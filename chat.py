@@ -8,15 +8,15 @@ from flask import Flask, render_template, request
 from flask import redirect, url_for
 from flask_sockets import Sockets
 
-REDIS_URL = os.environ["REDIS_URL"]
+# REDIS_URL = os.environ["REDIS_URL"]
 REDIS_CHAN = "chat"
 
 app = Flask(__name__)
 app.debug = True
 
 sockets = Sockets(app)
-redis = redis.from_url(REDIS_URL)
-# redis = redis.Redis()
+# redis = redis.from_url(REDIS_URL)
+redis = redis.Redis()
 
 
 
@@ -71,9 +71,9 @@ roomnum = ""
 @app.route("/", methods=["GET"])
 def login():
     global handle, roomnum
-    if (handle and roomnum and handle!=""):
-        handle  = request.args.get("name")
-        roomnum = str(request.args.get("roomnum"))
+    handle  = request.args.get("name")
+    roomnum = str(request.args.get("roomnum"))
+    if (handle and roomnum):
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -98,9 +98,8 @@ def inbox(ws):
 @sockets.route("/index/receive")
 def outbox(ws):
     global handle, roomnum
-    if (handle and roomnum and handle!=""):
-        chats.register(ws, handle, roomnum)
-        app.logger.info(u"regist: {}".format(ws))
+    chats.register(ws, handle, roomnum)
+    app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
         gevent.sleep(0.1)
