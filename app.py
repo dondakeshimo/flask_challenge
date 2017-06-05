@@ -72,6 +72,7 @@ def login():
     handle  = request.args.get("name")
     roomnum = str(request.args.get("roomnum"))
     if (handle and roomnum and handle!=""):
+        print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -79,6 +80,7 @@ def login():
 @app.route("/index")
 def index():
     global handle, roomnum
+    print("index:", handle, roomnum)
     return render_template("index.html", handle=handle, roomnum=roomnum)
 
 @sockets.route("/index/submit")
