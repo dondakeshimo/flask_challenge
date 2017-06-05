@@ -72,14 +72,12 @@ chats.start()
 def login():
     if (request.args.get("name") and request.args.get("roomnum")):
         resp = make_response("for reconnecting")
-        max_age = 60*60
-        expires = int(datetime.now().timestamp()) + max_age
 
         handle  = request.args.get("name")
         roomnum = str(request.args.get("roomnum"))
 
-        resp.set_cookie("handle", value=handle, max_age=max_age, expires=expires)
-        resp.set_cookie("roomnum", value=roomnum, max_age=max_age, expires=expires)
+        resp.set_cookie("handle", value=handle)
+        resp.set_cookie("roomnum", value=roomnum)
 
         print("login:", handle, roomnum)
         return redirect(url_for("index"))
