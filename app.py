@@ -71,9 +71,9 @@ roomnum = ""
 @app.route("/", methods=["GET"])
 def login():
     global handle, roomnum
-    if (handle and roomnum):
-        handle  = request.args.get("name")
-        roomnum = str(request.args.get("roomnum"))
+    handle  = request.args.get("name")
+    roomnum = str(request.args.get("roomnum"))
+    if (handle and roomnum and handle!=""):
         return redirect(url_for("index"))
     return render_template("login.html")
 
