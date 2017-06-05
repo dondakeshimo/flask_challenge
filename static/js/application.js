@@ -18,13 +18,10 @@ inbox.onmessage = function(message) {
 
 inbox.onclose = function(){
     console.log('inbox closed');
-    this.inbox = new WebSocket(inbox.url);
-
 };
 
 outbox.onclose = function(){
     console.log('outbox closed');
-    this.outbox = new WebSocket(outbox.url);
 };
 
 $("#input-form").on("submit", function(event) {
@@ -33,3 +30,10 @@ $("#input-form").on("submit", function(event) {
   outbox.send(JSON.stringify({ handle: handle, roomnum: roomnum, text: text }));
   $("#input-text")[0].value = "";
 });
+
+function keep_ws(){
+  outbox.send("please keep me");
+  inbox.send("keep me please");
+}
+
+setInterval("keep_ws",15000);

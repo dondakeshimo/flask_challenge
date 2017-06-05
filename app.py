@@ -4,7 +4,6 @@ import os
 import redis
 import gevent
 import json
-from datetime import datetime
 from flask import Flask, render_template, request
 from flask import redirect, url_for
 from flask import make_response
@@ -66,19 +65,16 @@ class ChatBackend(object):
 
 chats = ChatBackend()
 chats.start()
+handle = ""
+roomnum = ""
 
 
 @app.route("/", methods=["GET"])
 def login():
+    global handle, roomnum
     if (request.args.get("name") and request.args.get("roomnum")):
-        resp = make_response("for reconnecting")
-
         handle  = request.args.get("name")
         roomnum = str(request.args.get("roomnum"))
-
-        resp.set_cookie("handle", value=handle)
-        resp.set_cookie("roomnum", value=roomnum)
-
         print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
@@ -86,8 +82,7 @@ def login():
 
 @app.route("/index")
 def index():
-    handle = request.cookies.get("handle")
-    roomnum = request.cookies.get("roomnum")
+    global handle, roomnum
     print("index:", handle, roomnum)
     return render_template("index.html", handle=handle, roomnum=roomnum)
 
@@ -104,10 +99,10 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-    handle = request.cookies.get("handle")
-    roomnum = request.cookies.get("roomnum")
-    chats.register(ws, handle, roomnum)
-    app.logger.info(u"regist: {}".format(ws))
+    global handle, roomnum
+    if (handle and roomnum and handle!=""):
+        chats.register(ws, handle, roomnum)
+        app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
         gevent.sleep(0.1)

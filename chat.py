@@ -89,7 +89,6 @@ def index():
 @sockets.route("/index/submit")
 def inbox(ws):
     while not ws.closed:
-        global chats
         gevent.sleep(0.1)
         message = ws.receive()
         print("data from ws:", message, type(message))
