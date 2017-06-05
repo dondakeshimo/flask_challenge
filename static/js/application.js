@@ -31,9 +31,10 @@ $("#input-form").on("submit", function(event) {
   $("#input-text")[0].value = "";
 });
 
-function keep_ws(){
+var keep_ws = function(){
   outbox.send("please keep me");
   inbox.send("keep me please");
+  console.log("I keep ws");
 }
 
-setInterval("keep_ws",15000);
+setInterval(keep_ws, 15000);

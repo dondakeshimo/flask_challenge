@@ -48,7 +48,7 @@ class ChatBackend(object):
     def send(self, client, data):
         try:
             d_data = json.loads(data)
-            roomnum = d_data["roomnum"]
+            roomnum = d_data.get("roomnum")
             if self.clients[client]["roomnum"] == roomnum:
                 data = json.dumps(d_data)
                 client.send(data)
