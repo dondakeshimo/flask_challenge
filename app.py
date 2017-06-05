@@ -4,6 +4,7 @@ import os
 import redis
 import gevent
 from flask import Flask, render_template, request
+from flask import redirect, url_for
 from flask_sockets import Sockets
 
 # REDIS_URL = os.environ["REDIS_URL"]
@@ -21,7 +22,7 @@ redis = redis.Redis()
 class ChatBackend(object):
 
     def __init__(self):
-        self.clients = list()
+        self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
 
@@ -34,40 +35,47 @@ class ChatBackend(object):
                 app.logger.info(u"Sending message: {}".format(data))
                 yield data
 
-    def register(self, client):
-        self.clients.append(client)
+    def register(self, client, handle, roomnum):
+        self.clients[client] = {
+                                "handle":  handle,
+                                "roomnum": roomnum,
+                                }
 
     def send(self, client, data):
         try:
             client.send(data)
         except Exception:
-            self.clients.remove(client)
+            del self.clients[client]
 
     def run(self):
         for data in self.__iter_data():
-            for client in self.clients:
-                gevent.spawn(self.send, client, data)
+            for client in self.clients.keys():
+                   gevent.spawn(self.send, client, data)
 
     def start(self):
         gevent.spawn(self.run)
 
 chats = ChatBackend()
 chats.start()
+handle = "handle"
+roomnum = "roomnum"
 
 
 @app.route("/", methods=["GET"])
 def login():
-    print(request.headers)
-    print("body: {}".format(request.data))
+    global handle, roomnum
+    handle  = request.args.get("name")
+    roomnum = str(request.args.get("roomnum"))
+    if (handle and roomnum):
+        return redirect(url_for("index"))
     return render_template("login.html")
 
 
-#@app.route("/")
-#def hello():
-#    name = "taku"
-#    return render_template("index.html", handlename=name)
+@app.route("/index")
+def index():
+    return render_template("index.html", handlename=handle)
 
-@sockets.route("/submit")
+@sockets.route("/index/submit")
 def inbox(ws):
     while not ws.closed:
         gevent.sleep(0.1)
@@ -78,9 +86,10 @@ def inbox(ws):
             app.logger.info(u"Inserting message: {}".format(message))
             redis.publish(REDIS_CHAN, message)
 
-@sockets.route("/receive")
+@sockets.route("/index/receive")
 def outbox(ws):
-    chats.register(ws)
+    global handle, roomnum
+    chats.register(ws, handle, roomnum)
     print(ws)
 
     while not ws.closed:
