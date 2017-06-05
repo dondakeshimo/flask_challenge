@@ -107,3 +107,6 @@ def outbox(ws):
     while not ws.closed:
         gevent.sleep(0.1)
 
+def inbox(ws):
+    while not ws.closed:
+        print(ws.receive())
