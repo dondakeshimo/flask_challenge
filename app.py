@@ -43,7 +43,7 @@ class ChatBackend(object):
                                 "roomnum": roomnum,
                                 }
         for k,v in self.clients.items():
-            app.logger.info("key:", k, "values:", v)
+            print("key:", k, "values:", v)
 
     def send(self, client, data):
         try:
@@ -90,7 +90,7 @@ def inbox(ws):
         global chats
         gevent.sleep(0.1)
         message = ws.receive()
-        app.logger.info("data from ws:", message, type(message))
+        print("data from ws:", message, type(message))
 
         if message:
             app.logger.info(u"Inserting message: {}".format(message))
