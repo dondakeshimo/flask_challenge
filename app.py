@@ -11,6 +11,7 @@ from flask_sockets import Sockets
 
 REDIS_URL = os.environ["REDIS_URL"]
 REDIS_CHAN = "chat"
+TEMP_CHAN = "temp"
 
 app = Flask(__name__)
 app.debug = True
@@ -24,8 +25,8 @@ redis = redis.from_url(REDIS_URL)
 class ChatBackend(object):
 
     def __init__(self):
-        self.temp_client = list()
-        self.indent = -1
+#        self.temp_client = list()
+#        self.indent = -1
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
@@ -79,14 +80,18 @@ indent = -1
 def login():
 #    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
-        chats.increment()
-        chats.temp_client.append((request.args.get("name"),
-                                  str(request.args.get("roomnum"))
-                                ))
+        temp_client = json.dumps({"handle":  request.args.get("name"),
+                                  "roomnum": str(request.args.get("roomnum"))
+                                  })
+        redis.publish(TEMP_CHAN, temp_client)
+#        chats.increment()
+#        chats.temp_client.append((request.args.get("name"),
+#                                  str(request.args.get("roomnum"))
+#                                ))
 #        handle.append(request.args.get("name"))
 #        roomnum.append(str(request.args.get("roomnum")))
 #        print("login:", handle[indent], roomnum[indent], indent)
-        print("login:", chats.temp_client[chats.indent])
+#        print("login:", chats.temp_client[chats.indent])
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -96,11 +101,19 @@ def index():
 #    global handle, roomnum, indent
 #    print("index:", indent)
 #    print("index:", handle[indent], roomnum[indent], indent)
-    print("index:", chats.temp_client[chats.indent])
-    return render_template("index.html", 
-                           handle=chats.temp_client[chats.indent][0],
-                           roomnum=chats.temp_client[chats.indent][1],
-                           )
+#    print("index:", chats.temp_client[chats.indent])
+    index_pubsub = redis.pubsub()
+    index_pubsub.subscribe(TEMP_CHAN)
+    while(True):
+        client = index_pubsub.listen()
+        if client["type"]=="message":
+            d_client = json.loads(client)
+            print(d_client)
+            return render_template("index.html", 
+                                   d_client["handle"],
+                                   d_client["roomnum"],
+                                  )
+            break
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -118,12 +131,21 @@ def outbox(ws):
 #    global handle, roomnum, indent
 #    if (handle and roomnum and handle!=""):
 #    print("pre regist:", handle[indent], roomnum[indent], indent)
-    print("regist index:", chats.indent)
-    print("pre regist:", chats.temp_client[chats.indent])
-    chats.register(ws, 
-                   chats.temp_client[chats.indent][0], 
-                   chats.temp_client[chats.indent][1],
-                   )
+#    print("regist index:", chats.indent)
+#    print("pre regist:", chats.temp_client[chats.indent])
+#    chats.register(ws, 
+#                   chats.temp_client[chats.indent][0], 
+#                   chats.temp_client[chats.indent][1],
+#                   )
+    out_pubsub = redis.pubsub()
+    out_pubsub.subscribe(TEMP_CHAN)
+    while(True):
+        client = out_pubsub.listen()
+        if client["type"]=="message":
+            d_client = json.loads(client)
+            print(d_client)
+            chats.register(ws, d_client["handle"], d_client["roomnum"])
+            break
     app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
