@@ -78,6 +78,7 @@ chats.start()
 
 @app.route("/", methods=["GET"])
 def login():
+    global chats
 #    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
 #        chats.increment()
