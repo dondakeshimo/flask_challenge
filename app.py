@@ -118,6 +118,7 @@ def outbox(ws):
 #    global handle, roomnum, indent
 #    if (handle and roomnum and handle!=""):
 #    print("pre regist:", handle[indent], roomnum[indent], indent)
+    print("regist index:", chats.indent)
     print("pre regist:", chats.temp_client[chats.indent])
     chats.register(ws, 
                    chats.temp_client[chats.indent][0], 
