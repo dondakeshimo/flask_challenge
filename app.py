@@ -83,6 +83,7 @@ def login():
         temp_client = json.dumps({"handle":  request.args.get("name"),
                                   "roomnum": str(request.args.get("roomnum"))
                                   })
+        print(temp_client)
         redis.publish(TEMP_CHAN, temp_client)
 #        chats.increment()
 #        chats.temp_client.append((request.args.get("name"),
