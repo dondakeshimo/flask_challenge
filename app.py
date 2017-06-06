@@ -101,7 +101,7 @@ def inbox(ws):
         print("data from ws:", message, type(message))
 
         if message:
-            if message==u"please keep me":
+            if not message==u"please keep me":
                 app.logger.info(u"Inserting message: {}".format(message))
                 redis.publish(REDIS_CHAN, message)
 
