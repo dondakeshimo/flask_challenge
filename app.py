@@ -85,6 +85,7 @@ def login():
 @app.route("/index")
 def index():
     global handle, roomnum, indent
+    print("index:", indent)
     print("index:", handle[indent], roomnum[indent], indent)
     return render_template("index.html", 
                            handle=handle[indent], 
