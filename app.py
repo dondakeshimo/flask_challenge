@@ -84,14 +84,6 @@ def login():
     global chats
 #    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
-#        chats.increment()
-#        chats.temp_client.append((request.args.get("name"),
-#                                  str(request.args.get("roomnum"))
-#                                ))
-#        handle.append(request.args.get("name"))
-#        roomnum.append(str(request.args.get("roomnum")))
-#        print("login:", handle[indent], roomnum[indent], indent)
-#        print("login:", chats.temp_client[chats.indent], chats.indent)
         chats.temp_handle = request.args.get("name")
         chats.temp_roomnum = str(request.args.get("roomnum"))
         print("login:", chats.temp_handle, chats.temp_roomnum)
@@ -104,14 +96,6 @@ def login():
 def index():
     global chats
 #    global handle, roomnum, indent
-#    print("index:", indent)
-#    print("index:", handle[indent], roomnum[indent], indent)
-#    print("index indent:", chats.indent)
-#    print("index:", chats.temp_client[chats.indent])
-#    return render_template("index.html", 
-#                           handle=chats.temp_client[chats.indent][0],
-#                           roomnum=chats.temp_client[chats.indent][1]
-#                           )
     print("index:", chats.temp_handle, chats.temp_roomnum)
     chats.show_instance()
     return render_template("index.html", 
@@ -132,15 +116,9 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
+    global chat
 #    global handle, roomnum, indent
 #    if (handle and roomnum and handle!=""):
-#    print("pre regist:", handle[indent], roomnum[indent], indent)
-#    print("regist index:", chats.indent)
-#    print("pre regist:", chats.temp_client[chats.indent])
-#    chats.register(ws, 
-#                   chats.temp_client[chats.indent][0], 
-#                   chats.temp_client[chats.indent][1],
-#                   )
     print("regist:", chats.temp_handle, chats.temp_roomnum)
     chats.register(ws, chats.temp_handle, chats.temp_roomnum)
     app.logger.info(u"regist: {}".format(ws))
