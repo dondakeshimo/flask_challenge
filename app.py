@@ -65,16 +65,18 @@ class ChatBackend(object):
 
 chats = ChatBackend()
 chats.start()
-handle = ""
-roomnum = ""
+handle = list()
+roomnum = list()
+indent = -1
 
 
 @app.route("/", methods=["GET"])
 def login():
     global handle, roomnum
     if (request.args.get("name") and request.args.get("roomnum")):
-        handle  = request.args.get("name")
-        roomnum = str(request.args.get("roomnum"))
+        indent += 1
+        handle[indent]  = request.args.get("name")
+        roomnum[indent] = str(request.args.get("roomnum"))
         print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
@@ -82,9 +84,12 @@ def login():
 
 @app.route("/index")
 def index():
-    global handle, roomnum
-    print("index:", handle, roomnum)
-    return render_template("index.html", handle=handle, roomnum=roomnum)
+    global handle, roomnum, indent
+    print("index:", handle[indent], roomnum[indent], indent)
+    return render_template("index.html", 
+                           handle=handle[indent], 
+                           roomnum=roomnum[indent]
+                           )
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -99,10 +104,11 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-    global handle, roomnum
-    if (handle and roomnum and handle!=""):
-        chats.register(ws, handle, roomnum)
-        app.logger.info(u"regist: {}".format(ws))
+    global handle, roomnum, indent
+#     if (handle and roomnum and handle!=""):
+    print("pre regist:", handle[indent], roomnum[indent], indent)
+    chats.register(ws, handle[indent], roomnum[indent])
+    app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
         gevent.sleep(0.1)
