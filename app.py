@@ -85,8 +85,8 @@ def login():
 
 @app.route("/index")
 def index():
-    handle = str(redis.get("handle"))
-    roomnum = str(redis.get("roomnum"))
+    handle = unicode(redis.get("handle"), "utf-8")
+    roomnum = unicode(redis.get("roomnum"), "utf-8")
     print("index:", handle, roomnum)
     return render_template("index.html", 
                            handle=handle, 
@@ -107,8 +107,8 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-    handle = str(redis.get("handle"))
-    roomnum = str(redis.get("roomnum"))
+    handle = unicode(redis.get("handle"), "utf-8")
+    roomnum = unicode(redis.get("roomnum"), "utf-8")
     print("regist:", handle, roomnum)
     chats.register(ws, handle, roomnum)
     app.logger.info(u"regist: {}".format(ws))
