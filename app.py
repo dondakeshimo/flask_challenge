@@ -83,8 +83,8 @@ def login():
     if (request.args.get("name") and request.args.get("roomnum")):
         handle = request.args.get("name")
         roomnum = str(request.args.get("roomnum"))
-        print("login:", handle, roomnum)
         show_global()
+        print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -92,6 +92,7 @@ def login():
 @app.route("/index")
 def index():
     global chats
+    show_global()
     print("index:", handle, roomnum)
     return render_template("index.html", 
                            handle=handle, 
