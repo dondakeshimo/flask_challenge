@@ -101,8 +101,9 @@ def inbox(ws):
         print("data from ws:", message, type(message))
 
         if message:
-            app.logger.info(u"Inserting message: {}".format(message))
-            redis.publish(REDIS_CHAN, message)
+            if message==u"please keep me":
+                app.logger.info(u"Inserting message: {}".format(message))
+                redis.publish(REDIS_CHAN, message)
 
 @sockets.route("/index/receive")
 def outbox(ws):
@@ -118,4 +119,3 @@ def outbox(ws):
 def inbox(ws):
     while not ws.closed:
         gevent.sleep(0.1)
-        print(ws.receive())
