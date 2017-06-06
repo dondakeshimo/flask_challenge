@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import time
 import redis
 import gevent
 import json
@@ -88,6 +89,7 @@ def login():
         roomnum.append(str(request.args.get("roomnum")))
 #        print("login:", handle[indent], roomnum[indent], indent)
         print("login:", chats.temp_client[chats.indent])
+        time.sleep(1)
         return redirect(url_for("index"))
     return render_template("login.html")
 
