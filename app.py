@@ -107,7 +107,10 @@ def index():
 #                           roomnum=chats.temp_client[chats.indent][1]
 #                           )
     print("index:", chats.temp_handle, chats.temp_roomnum)
-    return render_template("index.html", chats.temp_handle, chats.temp_roomnum)
+    return render_template("index.html", 
+                           handle=chats.temp_handle, 
+                           roomnum=chats.temp_roomnum
+                           )
 
 @sockets.route("/index/submit")
 def inbox(ws):
