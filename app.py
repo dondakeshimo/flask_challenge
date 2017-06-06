@@ -75,8 +75,8 @@ def login():
     global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
         indent += 1
-        handle[indent]  = request.args.get("name")
-        roomnum[indent] = str(request.args.get("roomnum"))
+        handle.append(request.args.get("name"))
+        roomnum.append(str(request.args.get("roomnum")))
         print("login:", handle, roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
