@@ -24,6 +24,8 @@ redis = redis.from_url(REDIS_URL)
 class ChatBackend(object):
 
     def __init__(self):
+        self.temp_client = list()
+        self.indent = -1
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
@@ -36,6 +38,9 @@ class ChatBackend(object):
                 data = unicode(data, "utf-8")
                 app.logger.info(u"Sending message: {}".format(data))
                 yield data
+
+    def increment(self):
+        self.indent += 1
 
     def register(self, client, handle, roomnum):
         self.clients[client] = {
@@ -72,24 +77,29 @@ indent = -1
 
 @app.route("/", methods=["GET"])
 def login():
-    global handle, roomnum, indent
+#    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
-        indent += 1
-        handle.append(request.args.get("name"))
-        roomnum.append(str(request.args.get("roomnum")))
-        print("login:", handle[indent], roomnum[indent], indent)
+        chats.increment()
+        chats.temp_client.append((request.args.get("name"),
+                                  str(request.args.get("roomnum"))
+                                ))
+#        handle.append(request.args.get("name"))
+#        roomnum.append(str(request.args.get("roomnum")))
+#        print("login:", handle[indent], roomnum[indent], indent)
+        print("login:", chats.temp_client[chats.indent])
         return redirect(url_for("index"))
     return render_template("login.html")
 
 
 @app.route("/index")
 def index():
-    global handle, roomnum, indent
-    print("index:", indent)
-    print("index:", handle[indent], roomnum[indent], indent)
+#    global handle, roomnum, indent
+#    print("index:", indent)
+#    print("index:", handle[indent], roomnum[indent], indent)
+    print("index:", chats.temp_client[chats.indent])
     return render_template("index.html", 
-                           handle=handle[indent], 
-                           roomnum=roomnum[indent]
+                           handle=chats.temp_client[chats.indent][0],
+                           roomnum=chats.temp_client[chats.indent][[1]],
                            )
 
 @sockets.route("/index/submit")
@@ -105,10 +115,14 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-    global handle, roomnum, indent
-#     if (handle and roomnum and handle!=""):
-    print("pre regist:", handle[indent], roomnum[indent], indent)
-    chats.register(ws, handle[indent], roomnum[indent])
+#    global handle, roomnum, indent
+#    if (handle and roomnum and handle!=""):
+#    print("pre regist:", handle[indent], roomnum[indent], indent)
+    print("pre regist:", chats.temp_client[chats.indent])
+    chats.register(ws, 
+                   chats.temp_client[chats.indent][0], 
+                   chats.temp_client[chats.indent][1],
+                   )
     app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
