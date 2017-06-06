@@ -88,8 +88,7 @@ def login():
         handle.append(request.args.get("name"))
         roomnum.append(str(request.args.get("roomnum")))
 #        print("login:", handle[indent], roomnum[indent], indent)
-        print("login:", chats.temp_client[chats.indent])
-        time.sleep(1)
+        print("login:", chats.temp_client[chats.indent], chats.indent)
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -99,7 +98,12 @@ def index():
 #    global handle, roomnum, indent
 #    print("index:", indent)
 #    print("index:", handle[indent], roomnum[indent], indent)
+    print("index indent:", chats.indent)
     print("index:", chats.temp_client[chats.indent])
+    return render_template("index.html", 
+                           handle=chats.temp_client[chats.indent][0],
+                           roomnum=chats.temp_client[chats.indent][1]
+                           )
 
 @sockets.route("/index/submit")
 def inbox(ws):
