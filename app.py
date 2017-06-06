@@ -92,7 +92,6 @@ def login():
 @app.route("/index")
 def index():
     global chats
-    global handle, roomnum
     print("index:", handle, roomnum)
     return render_template("index.html", 
                            handle=handle, 
@@ -113,7 +112,6 @@ def inbox(ws):
 @sockets.route("/index/receive")
 def outbox(ws):
     global chats
-    global handle, roomnum
 #    if (handle and roomnum and handle!=""):
     print("regist:", handle, roomnum)
     chats.register(ws, handle, roomnum)
