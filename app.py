@@ -86,6 +86,7 @@ def login():
     if (request.args.get("name") and request.args.get("roomnum")):
         chats.temp_handle = request.args.get("name")
         chats.temp_roomnum = str(request.args.get("roomnum"))
+        time.sleep(1)
         print("login:", chats.temp_handle, chats.temp_roomnum)
         chats.show_instance()
         return redirect(url_for("index"))
