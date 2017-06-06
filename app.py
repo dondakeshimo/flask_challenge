@@ -99,7 +99,7 @@ def index():
     print("index:", chats.temp_client[chats.indent])
     return render_template("index.html", 
                            handle=chats.temp_client[chats.indent][0],
-                           roomnum=chats.temp_client[chats.indent][[1]],
+                           roomnum=chats.temp_client[chats.indent][1],
                            )
 
 @sockets.route("/index/submit")
