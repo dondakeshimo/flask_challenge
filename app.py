@@ -116,7 +116,7 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-    global chat
+    global chats
 #    global handle, roomnum, indent
 #    if (handle and roomnum and handle!=""):
     print("regist:", chats.temp_handle, chats.temp_roomnum)
