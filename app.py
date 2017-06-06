@@ -98,7 +98,7 @@ def login():
 def index():
 #    global handle, roomnum, indent
 #    print("index:", indent)
-    print("index:", handle[indent], roomnum[indent], indent)
+#    print("index:", handle[indent], roomnum[indent], indent)
     print("index:", chats.temp_client[chats.indent])
 
 @sockets.route("/index/submit")
