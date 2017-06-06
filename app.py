@@ -84,6 +84,7 @@ def login():
         handle = request.args.get("name")
         roomnum = str(request.args.get("roomnum"))
         print("login:", handle, roomnum)
+        show_global()
         return redirect(url_for("index"))
     return render_template("login.html")
 
