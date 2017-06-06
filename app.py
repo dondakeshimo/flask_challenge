@@ -72,7 +72,7 @@ indent = -1
 
 @app.route("/", methods=["GET"])
 def login():
-    global handle, roomnum
+    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
         indent += 1
         handle[indent]  = request.args.get("name")
