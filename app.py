@@ -47,7 +47,7 @@ class ChatBackend(object):
 #        self.indent += 1
 
     def show_instance(self):
-        print(self.handle, self.roomnum)
+        print(self.temp_handle, self.temp_roomnum)
 
     def register(self, client, handle, roomnum):
         self.clients[client] = {
