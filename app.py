@@ -43,8 +43,11 @@ class ChatBackend(object):
                 app.logger.info(u"Sending message: {}".format(data))
                 yield data
 
-    def increment(self):
-        self.indent += 1
+#    def increment(self):
+#        self.indent += 1
+
+    def show_instance(self):
+        print(self.handle, self.roomnum)
 
     def register(self, client, handle, roomnum):
         self.clients[client] = {
@@ -92,12 +95,14 @@ def login():
         chats.temp_handle = request.args.get("name")
         chats.temp_roomnum = str(request.args.get("roomnum"))
         print("login:", chats.temp_handle, chats.temp_roomnum)
+        chats.show_instance()
         return redirect(url_for("index"))
     return render_template("login.html")
 
 
 @app.route("/index")
 def index():
+    global chats
 #    global handle, roomnum, indent
 #    print("index:", indent)
 #    print("index:", handle[indent], roomnum[indent], indent)
@@ -108,6 +113,7 @@ def index():
 #                           roomnum=chats.temp_client[chats.indent][1]
 #                           )
     print("index:", chats.temp_handle, chats.temp_roomnum)
+    chats.show_instance()
     return render_template("index.html", 
                            handle=chats.temp_handle, 
                            roomnum=chats.temp_roomnum
