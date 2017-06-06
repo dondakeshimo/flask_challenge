@@ -108,6 +108,7 @@ def index():
     while(True):
         for client in index_pubsub.listen():
             if client["type"]=="message":
+                print(client, type(client))
                 d_client = json.loads(client)
                 print(d_client)
                 return render_template("index.html", 
