@@ -12,7 +12,6 @@ from flask_sockets import Sockets
 
 REDIS_URL = os.environ["REDIS_URL"]
 REDIS_CHAN = "chat"
-TEMP_CHAN = "temp"
 
 app = Flask(__name__)
 app.debug = True
@@ -25,10 +24,12 @@ redis = redis.from_url(REDIS_URL)
 
 class ChatBackend(object):
 
+
     def __init__(self):
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
+
 
     def __iter_data(self):
         for message in self.pubsub.listen():
@@ -48,6 +49,7 @@ class ChatBackend(object):
         for k,v in self.clients.items():
             print("key:", k, "values:", v)
 
+
     def send(self, client, data):
         try:
             d_data = json.loads(data)
@@ -58,6 +60,11 @@ class ChatBackend(object):
         except Exception:
             del self.clients[client]
 
+
+    def delete_client(self, client):
+        del self.client[client]
+
+
     def run(self):
         for data in self.__iter_data():
             for client in self.clients.keys():
@@ -65,6 +72,7 @@ class ChatBackend(object):
 
     def start(self):
         gevent.spawn(self.run)
+
 
 chats = ChatBackend()
 chats.start()
@@ -93,6 +101,7 @@ def index():
                            roomnum=roomnum
                            )
 
+
 @sockets.route("/index/submit")
 def inbox(ws):
     while not ws.closed:
@@ -105,6 +114,7 @@ def inbox(ws):
                 app.logger.info(u"Inserting message: {}".format(message))
                 redis.publish(REDIS_CHAN, message)
 
+
 @sockets.route("/index/receive")
 def outbox(ws):
     handle = unicode(redis.get("handle"), "utf-8")
@@ -115,6 +125,10 @@ def outbox(ws):
 
     while not ws.closed:
         gevent.sleep(0.1)
+
+    if ws.closed:
+        chats.delete_client[ws]
+
 
 def inbox(ws):
     while not ws.closed:
