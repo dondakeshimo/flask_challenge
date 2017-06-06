@@ -80,19 +80,14 @@ indent = -1
 def login():
 #    global handle, roomnum, indent
     if (request.args.get("name") and request.args.get("roomnum")):
-        temp_client = json.dumps({"handle":  request.args.get("name"),
-                                  "roomnum": str(request.args.get("roomnum"))
-                                  })
-        print(temp_client)
-        redis.publish(TEMP_CHAN, temp_client)
-#        chats.increment()
-#        chats.temp_client.append((request.args.get("name"),
-#                                  str(request.args.get("roomnum"))
-#                                ))
-#        handle.append(request.args.get("name"))
-#        roomnum.append(str(request.args.get("roomnum")))
+        chats.increment()
+        chats.temp_client.append((request.args.get("name"),
+                                  str(request.args.get("roomnum"))
+                                ))
+        handle.append(request.args.get("name"))
+        roomnum.append(str(request.args.get("roomnum")))
 #        print("login:", handle[indent], roomnum[indent], indent)
-#        print("login:", chats.temp_client[chats.indent])
+        print("login:", chats.temp_client[chats.indent])
         return redirect(url_for("index"))
     return render_template("login.html")
 
@@ -101,21 +96,8 @@ def login():
 def index():
 #    global handle, roomnum, indent
 #    print("index:", indent)
-#    print("index:", handle[indent], roomnum[indent], indent)
-#    print("index:", chats.temp_client[chats.indent])
-    index_pubsub = redis.pubsub()
-    index_pubsub.subscribe(TEMP_CHAN)
-    while(True):
-        for client in index_pubsub.listen():
-            if client["type"]=="message":
-                print(client, type(client))
-                d_client = json.loads(client)
-                print(d_client)
-                return render_template("index.html", 
-                                       d_client["handle"],
-                                       d_client["roomnum"],
-                                      )
-                break
+    print("index:", handle[indent], roomnum[indent], indent)
+    print("index:", chats.temp_client[chats.indent])
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -133,21 +115,12 @@ def outbox(ws):
 #    global handle, roomnum, indent
 #    if (handle and roomnum and handle!=""):
 #    print("pre regist:", handle[indent], roomnum[indent], indent)
-#    print("regist index:", chats.indent)
-#    print("pre regist:", chats.temp_client[chats.indent])
-#    chats.register(ws, 
-#                   chats.temp_client[chats.indent][0], 
-#                   chats.temp_client[chats.indent][1],
-#                   )
-    out_pubsub = redis.pubsub()
-    out_pubsub.subscribe(TEMP_CHAN)
-    while(True):
-        for client in out_pubsub.listen():
-            if client["type"]=="message":
-                d_client = json.loads(client)
-                print(d_client)
-                chats.register(ws, d_client["handle"], d_client["roomnum"])
-                break
+    print("regist index:", chats.indent)
+    print("pre regist:", chats.temp_client[chats.indent])
+    chats.register(ws, 
+                   chats.temp_client[chats.indent][0], 
+                   chats.temp_client[chats.indent][1],
+                   )
     app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
