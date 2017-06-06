@@ -25,8 +25,8 @@ redis = redis.from_url(REDIS_URL)
 class ChatBackend(object):
 
     def __init__(self):
-#        self.temp_client = list()
-#        self.indent = -1
+        self.temp_client = list()
+        self.indent = -1
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
