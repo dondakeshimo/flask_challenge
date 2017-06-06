@@ -29,7 +29,7 @@ class ChatBackend(object):
 #        self.temp_client = list()
 #        self.indent = -1
         self.temp_handle = ""
-        self.temp_roomunm = ""
+        self.temp_roomnum = ""
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
@@ -97,7 +97,6 @@ def login():
 
 @app.route("/index")
 def index():
-    global chats
 #    global handle, roomnum, indent
 #    print("index:", indent)
 #    print("index:", handle[indent], roomnum[indent], indent)
