@@ -68,13 +68,6 @@ class ChatBackend(object):
 
 chats = ChatBackend()
 chats.start()
-handle = str()
-roomnum = str()
-
-
-def show_global():
-    global handle, roomnum
-    print("show global:", handle, roomnum)
 
 
 @app.route("/", methods=["GET"])
@@ -83,16 +76,17 @@ def login():
     if (request.args.get("name") and request.args.get("roomnum")):
         handle = request.args.get("name")
         roomnum = str(request.args.get("roomnum"))
-        show_global()
         print("login:", handle, roomnum)
+        redis.set("handle", handle)
+        redis.set("roomnum", roomnum)
         return redirect(url_for("index"))
     return render_template("login.html")
 
 
 @app.route("/index")
 def index():
-    global chats
-    show_global()
+    handle = str(redis.get("handle"))
+    roomnum = str(redis.get("roomnum"))
     print("index:", handle, roomnum)
     return render_template("index.html", 
                            handle=handle, 
@@ -112,8 +106,8 @@ def inbox(ws):
 
 @sockets.route("/index/receive")
 def outbox(ws):
-#    if (handle and roomnum and handle!=""):
-    show_global()
+    handle = str(redis.get("handle"))
+    roomnum = str(redis.get("roomnum"))
     print("regist:", handle, roomnum)
     chats.register(ws, handle, roomnum)
     app.logger.info(u"regist: {}".format(ws))
