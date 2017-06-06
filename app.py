@@ -105,15 +105,15 @@ def index():
     index_pubsub = redis.pubsub()
     index_pubsub.subscribe(TEMP_CHAN)
     while(True):
-        client = index_pubsub.listen()
-        if client["type"]=="message":
-            d_client = json.loads(client)
-            print(d_client)
-            return render_template("index.html", 
-                                   d_client["handle"],
-                                   d_client["roomnum"],
-                                  )
-            break
+        for client in index_pubsub.listen():
+            if client["type"]=="message":
+                d_client = json.loads(client)
+                print(d_client)
+                return render_template("index.html", 
+                                       d_client["handle"],
+                                       d_client["roomnum"],
+                                      )
+                break
 
 @sockets.route("/index/submit")
 def inbox(ws):
@@ -140,12 +140,12 @@ def outbox(ws):
     out_pubsub = redis.pubsub()
     out_pubsub.subscribe(TEMP_CHAN)
     while(True):
-        client = out_pubsub.listen()
-        if client["type"]=="message":
-            d_client = json.loads(client)
-            print(d_client)
-            chats.register(ws, d_client["handle"], d_client["roomnum"])
-            break
+        for client in out_pubsub.listen():
+            if client["type"]=="message":
+                d_client = json.loads(client)
+                print(d_client)
+                chats.register(ws, d_client["handle"], d_client["roomnum"])
+                break
     app.logger.info(u"regist: {}".format(ws))
 
     while not ws.closed:
