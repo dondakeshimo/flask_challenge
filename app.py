@@ -26,10 +26,6 @@ redis = redis.from_url(REDIS_URL)
 class ChatBackend(object):
 
     def __init__(self):
-#        self.temp_client = list()
-#        self.indent = -1
-#        self.temp_handle = ""
-#        self.temp_roomnum = ""
         self.clients = dict()
         self.pubsub = redis.pubsub()
         self.pubsub.subscribe(REDIS_CHAN)
@@ -43,8 +39,6 @@ class ChatBackend(object):
                 app.logger.info(u"Sending message: {}".format(data))
                 yield data
 
-#    def show_instance(self):
-#        print(self.temp_handle, self.temp_roomnum)
 
     def register(self, client, handle, roomnum):
         self.clients[client] = {
@@ -77,9 +71,14 @@ chats.start()
 handle = str()
 roomnum = str()
 
+
+def show_global():
+    global handle, roomnum
+    print("show global:", handle, roomnum)
+
+
 @app.route("/", methods=["GET"])
 def login():
-    global chats
     global handle, roomnum
     if (request.args.get("name") and request.args.get("roomnum")):
         handle = request.args.get("name")
