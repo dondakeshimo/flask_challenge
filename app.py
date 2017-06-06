@@ -57,7 +57,7 @@ class ChatBackend(object):
     def send(self, client, data):
         try:
             d_data = json.loads(data)
-            roomnum = d_data.get("roomnum")
+            roomnum = d_data.get("roomnum", 0)
             if self.clients[client]["roomnum"] == roomnum:
                 data = json.dumps(d_data)
                 client.send(data)
@@ -97,6 +97,7 @@ def login():
 
 @app.route("/index")
 def index():
+    global chats
 #    global handle, roomnum, indent
 #    print("index:", indent)
 #    print("index:", handle[indent], roomnum[indent], indent)
