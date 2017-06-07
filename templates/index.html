@@ -7,10 +7,15 @@
   <form id="input-form" class="form-inline">
     <label for="input-text" id="handle">{{ handle }}</label>
     <div class="form-group">
-      <input id="input-text" type="text" class="form-control" placeholder="Enter chat text here!" autofocus />
+      <input id="input-text" type="text" class="form-control" size=40 placeholder="Enter chat text here!" autofocus />
     </div>
     <button class="btn btn-primary" type="submit">Send</button>
   </form>
+  <div class="page-header">
+    <h2>Chat Member</h2>
+  </div>
+  <div id="chat-member">
+  </div>
   <div class="page-header">
     <h1>Chat Room No. {{ roomnum }}</h1>
   </div>
