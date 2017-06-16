@@ -63,19 +63,17 @@ class ChatBackend(object):
 
 
     def send_member(self, client):
-        while True:
-            member = list()
-            for v in self.clients.values():
-                print(v)
-                if v["roomnum"]==self.clients[client]["roomnum"]:
-                    member.append(v["handle"])
-            member_data = json.dumps({"member": member})
-            try:
-                client.send(member_data)
-            except Exception:
-                self.delete_client(client)
+        member = list()
+        for v in self.clients.values():
+            if v["roomnum"]==self.clients[client]["roomnum"]:
+                member.append(v["handle"])
+        member_data = json.dumps({"member": member})
+        try:
+            client.send(member_data)
+        except Exception:
+            self.delete_client(client)
 
-            gevent.sleep(1)
+        gevent.sleep(0.1)
 
 
     def delete_client(self, client):
