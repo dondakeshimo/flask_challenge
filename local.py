@@ -64,7 +64,7 @@ class ChatBackend(object):
     def send_member(self, client):
         while True:
             member = list()
-            for v in self.clients.values():
+            for v in redis.lrange(client["roomnum"], 0, -1):
                 if v["roomnum"]==self.clients[client]["roomnum"]:
                     member.append(v["handle"])
             member_data = json.dumps({"member": member})
@@ -78,6 +78,7 @@ class ChatBackend(object):
 
     def delete_client(self, client):
         del self.clients[client]
+        redis.delete(str(client))
 
 
     def run(self):
@@ -139,7 +140,10 @@ def outbox(ws):
     roomnum = unicode(redis.get("roomnum"), "utf-8")
     print("regist:", handle, roomnum)
     chats.register(ws, handle, roomnum)
+    redis.lpush(roomnum, str(ws), handle)
     app.logger.info(u"regist: {}".format(ws))
+    redis.set("handle", "")
+    redis.set("roomnum", "")
 
     while not ws.closed:
         gevent.sleep(0.1)
