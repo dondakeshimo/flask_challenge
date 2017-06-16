@@ -73,8 +73,6 @@ class ChatBackend(object):
         except Exception:
             self.delete_client(client)
 
-        gevent.sleep(0.1)
-
 
     def delete_client(self, client):
         del self.clients[client]
